@@ -1,8 +1,8 @@
 const axios = require('axios');
 const fs = require('fs');
 
-const HANDOFF_FILE = 'ufl_data_handoff.json';
-const HTML_OUTPUT = 'UFLWTmp.htm';
+const HANDOFF_FILE = 'pages/ufl_data_handoff.json'; // Added pages/
+const HTML_OUTPUT = 'pages/UFLWTmp.htm';           // Add pages/
 
 async function runScraper() {
     console.log(`🚀 Scraper Active: Harvesting UFL Data & Building Skeleton...`);
