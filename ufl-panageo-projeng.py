@@ -32,7 +32,7 @@ def c_pags(pf, pa, gp, pp4v, v_pf, v_pa, vgp):
     return res
 
 if __name__ == "__main__":
-    handoff_file = 'ufl_data_handoff.json'
+    handoff_file = 'pages/ufl_data_handoff.json'
     master_template = 'UFLWTmpl8.htm' 
     
     if not os.path.exists(handoff_file) or not os.path.exists(master_template):
