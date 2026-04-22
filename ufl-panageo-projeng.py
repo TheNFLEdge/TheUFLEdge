@@ -81,19 +81,19 @@ if __name__ == "__main__":
     final_html = final_html.replace("[TOTAL_ATS_PCT]", "50")
     final_html = final_html.replace("UFL Week 3", f"UFL Week {week}")
 
-    # 4. SAVE THE "LIVE" FRONT DOOR (Week 5)
-    with open("UFLWTmp.htm", "w", encoding='utf-8') as f:
+    # 4. SAVE THE "LIVE" FRONT DOOR
+    with open("pages/UFLWTmp.htm", "w", encoding='utf-8') as f:
         f.write(final_html)
     
-    # 5. SAVE THE "SNAPSHOT" FOR NEXT WEEK'S ARCHIVE PASS
-    # This keeps the tags inside so the Archiver can find them later
-    with open(f"UFLWk{week}.htm", "w", encoding='utf-8') as f:
+    # 5. SAVE THE "SNAPSHOT"
+    with open(f"pages/UFLWk{week}.htm", "w", encoding='utf-8') as f:
         f.write(final_html)
 
-    # 6. INITIALIZE THE "F" VERSION (The Skeleton for the Audit)
+    # 6. INITIALIZE THE "F" VERSION
     completed_week = week - 1
-    archive_skeleton = f"UFLWk{completed_week}F.htm"
-    
+    archive_skeleton = f"pages/UFLWk{completed_week}F.htm"
+    prev_live_file = f"pages/UFLWk{completed_week}.htm"
+
     # Only copy the previous week's live file to the 'F' version if it exists
     prev_live_file = f"UFLWk{completed_week}.htm"
     if os.path.exists(prev_live_file):
