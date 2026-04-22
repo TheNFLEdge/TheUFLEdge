@@ -36,7 +36,7 @@ jobs:
 
       # 5. Run the Data Generation (Node.js)
       - name: Generate Weekly Data
-        run: node uflespnDataGen.js
+        run: node ufl-espnDataGen.js
 
       # 6. Run the Page Projector (Python)
       - name: Project Panageo Issue
