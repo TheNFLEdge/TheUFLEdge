@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE UFL EDGE | Algorithmic Suite</title>
+    <style>
+        :root {
+            --ufl-navy: #0A1F2D;
+            --ufl-volt: #D0FF00;
+            --bg-dark: #050505;
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background-color: var(--bg-dark);
+            color: #fff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR (OFF-CANVAS) */
+        .sidebar {
+            position: fixed;
+            left: calc(-1 * var(--sidebar-width));
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100%;
+            background: rgba(10, 31, 45, 0.98);
+            border-right: 1px solid var(--ufl-volt);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .sidebar.active {
+            transform: translateX(var(--sidebar-width));
+        }
+
+        /* HEADER UI */
+        .top-header {
+            height: var(--header-height);
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #222;
+        }
+
+        .menu-toggle {
+            background: none; border: 1px solid var(--ufl-volt);
+            color: var(--ufl-volt);
+            padding: 8px 12px; cursor: pointer;
+            font-size: 14px; font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+        }
+
+        .banner-logo { height: 40px; }
+
+        /* VIEWPORT AREA */
+        .main-content {
+            height: calc(100vh - var(--header-height));
+            width: 100%;
+            position: relative;
+        }
+
+        .projection-frame {
+            width: 100%; height: 100%;
+            border: none;
+        }
+
+        /* NAVIGATION LINKS */
+        .nav-links { margin-top: 40px; display: flex; flex-direction: column; gap: 10px; }
+        
+        .nav-link {
+            color: #ccc; text-decoration: none; padding: 15px;
+            font-size: 14px; font-weight: 600; letter-spacing: 1px;
+            border-bottom: 1px solid #1a2e3b;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover { color: var(--ufl-volt); background: rgba(208, 255, 0, 0.05); }
+
+        /* MOBILE OVERLAY */
+        .overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+        .overlay.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div style="font-size: 20px; font-weight: 800; color: var(--ufl-volt);">UFL EDGE</div>
+        <nav class="nav-links">
+            <a href="pages/UFLWTmp.htm" target="data_viewport" class="nav-link" onclick="toggleMenu()">GAME PROJECTIONS</a>
+            <a href="Archives/UFL_Stats.htm" target="data_viewport" class="nav-link" onclick="toggleMenu()">UFL ARCHIVES</a>
+            <a href="https://thenfledge.com" class="nav-link">THE NFL EDGE</a>
+        </nav>
+    </aside>
+
+    <main>
+        <header class="top-header">
+            <button class="menu-toggle" onclick="toggleMenu()">☰ MENU</button>
+            <img src="/images/UFLBanner26.gif" class="banner-logo" alt="UFL Edge">
+            <div style="width: 70px;"></div> <!-- Spacer for center-ish logo -->
+        </header>
+
+        <section class="main-content">
+            <iframe src="UFL/UFLWTmp.htm" name="data_viewport" class="projection-frame"></iframe>
+        </section>
+    </main>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+        // Close menu if user clicks outside on overlay
+        document.getElementById('overlay').onclick = toggleMenu;
+    </script>
+
+</body>
+</html>
