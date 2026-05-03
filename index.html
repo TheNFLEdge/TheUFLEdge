@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The UFL Edge - Powered by PanaGeoTech</title>
+    <style>
+        :root {
+            --dark-blue: #001A33;
+            --border-blue: #004080;
+            --accent-blue: #4d94ff;
+            --text-silver: #D3D3D3;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background-color: var(--dark-blue);
+            color: var(--text-silver);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden; /* Keeps frame structure rigid */
+        }
+
+        .site-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* TOP FRAME / HEADER */
+        .top-frame {
+            background-color: var(--dark-blue);
+            border-bottom: 2px solid var(--border-blue);
+            position: relative;
+        }
+
+        /* Banner Container */
+        .banner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .main-banner {
+            max-width: 800px;
+            height: auto;
+            border: 1px solid var(--border-blue);
+        }
+
+        /* Spinning Helmet Button - Top Left */
+        .helmet-spin {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* NAVIGATION BAR */
+        .nav-bar {
+            background: #000b1a;
+            padding: 8px;
+            text-align: center;
+            border-top: 1px solid var(--border-blue);
+        }
+
+        .nav-bar a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            margin: 0 15px;
+            letter-spacing: 1px;
+        }
+
+        .nav-bar a:hover { color: white; }
+
+        /* MAIN CONTENT (The UFLWTmp.htm Frame) */
+        .main-frame {
+            flex-grow: 1;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+        }
+
+        iframe {
+            width: 100%;
+            max-width: 1000px;
+            border-left: 2px solid var(--border-blue);
+            border-right: 2px solid var(--border-blue);
+            background: #000;
+        }
+
+        /* BOTTOM BANNER / FOOTER */
+        .bottom-frame {
+            background: #000;
+            border-top: 2px solid var(--border-blue);
+            padding: 15px 10px;
+            text-align: center;
+            font-size: 0.75em;
+            line-height: 1.6;
+            color: #888;
+        }
+
+        .highlight { color: var(--accent-blue); font-weight: bold; }
+
+    </style>
+</head>
+<body>
+
+<div class="site-wrapper">
+    
+    <!-- TOP FRAME: Banner and Spinning Helmet -->
+    <header class="top-frame">
+        <img src="images/HelmtSpin.gif" class="helmet-spin" alt="UFL Helmet">
+        <div class="banner-container">
+            <img src="images/EdgeBan26.jpg" class="main-banner" alt="The UFL Edge Banner">
+        </div>
+    </header>
+
+    <!-- NAVIGATION -->
+    <nav class="nav-bar">
+        <a href="index.html">Current Issue</a>
+        <a href="ufl26_archive.htm">Performance Archives</a>
+        <a href="mailto:admin@thenfledge.com">Contact / Support</a>
+    </nav>
+
+    <!-- CENTERED CONTENT FRAME -->
+    <main class="main-frame">
+        <iframe src="pages/UFLWTmp.htm" frameborder="0"></iframe>
+    </main>
+
+    <!-- BOTTOM BANNER -->
+    <footer class="bottom-frame">
+        The new home for <span class="highlight">The UFL Edge</span>. 
+        The <span class="highlight">PanaGeoTech</span> powered Pick and Projection Engine.<br>
+        Providing Score Projections and the <span class="highlight">WINNERS</span> for the UFL (formerly USFL and XFL).<br>
+        Copyright &copy; 2026 PanaGeoTech
+    </footer>
+
+</div>
+
+</body>
+</html>
+

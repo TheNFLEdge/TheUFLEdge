@@ -73,12 +73,7 @@ if __name__ == "__main__":
         # INJECT INTO SPECIFIC SLOT (Preserving your ad layout)
         final_html = final_html.replace(f"[SLOT_{index+1}]", card_content)
 
-    # 3. UPDATE TRACKER TABLE & HEADER
-    # Placeholder for ledger logic - hardcoded for now until we build the auto-tracker
-    final_html = final_html.replace("[TOTAL_W_L]", "6 - 2")
-    final_html = final_html.replace("[TOTAL_WIN_PCT]", "75")
-    final_html = final_html.replace("[TOTAL_ATS_W_L]", "4 - 4")
-    final_html = final_html.replace("[TOTAL_ATS_PCT]", "50")
+    # 3. UPDATE HEADER
     final_html = final_html.replace("UFL Week 3", f"UFL Week {week}")
 
     # 4. SAVE THE "LIVE" FRONT DOOR (Week 5)
@@ -90,15 +85,4 @@ if __name__ == "__main__":
     with open(f"UFLWk{week}.htm", "w", encoding='utf-8') as f:
         f.write(final_html)
 
-    # 6. INITIALIZE THE "F" VERSION (The Skeleton for the Audit)
-    completed_week = week - 1
-    archive_skeleton = f"UFLWk{completed_week}F.htm"
-    
-    # Only copy the previous week's live file to the 'F' version if it exists
-    prev_live_file = f"UFLWk{completed_week}.htm"
-    if os.path.exists(prev_live_file):
-        import shutil
-        shutil.copy2(prev_live_file, archive_skeleton)
-        print(f"📁 Archive Skeleton Created: {archive_skeleton} (Pending Audit)")
-    
     print(f"🚀 Week {week} Projections are LIVE!")
