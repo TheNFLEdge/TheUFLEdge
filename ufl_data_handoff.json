@@ -1,0 +1,95 @@
+{
+  "target_week": 7,
+  "matchups": [
+    {
+      "away": "CLB",
+      "home": "STL",
+      "line": "-3",
+      "ou": "(43.5)"
+    },
+    {
+      "away": "LOU",
+      "home": "DC",
+      "line": "-10",
+      "ou": "(47.5)"
+    },
+    {
+      "away": "DAL",
+      "home": "BHAM",
+      "line": "+1.5",
+      "ou": "(45.5)"
+    },
+    {
+      "away": "ORL",
+      "home": "HOU",
+      "line": "+4.5",
+      "ou": "(45.5)"
+    }
+  ],
+  "team_stats": {
+    "LOU": {
+      "pf_sum": 101,
+      "pa_sum": 92,
+      "wins": 2,
+      "gp": 4,
+      "last_pf": 3,
+      "last_pa": 16
+    },
+    "BHAM": {
+      "pf_sum": 78,
+      "pa_sum": 112,
+      "wins": 1,
+      "gp": 4,
+      "last_pf": 20,
+      "last_pa": 17
+    },
+    "STL": {
+      "pf_sum": 97,
+      "pa_sum": 78,
+      "wins": 3,
+      "gp": 4,
+      "last_pf": 16,
+      "last_pa": 3
+    },
+    "DC": {
+      "pf_sum": 142,
+      "pa_sum": 63,
+      "wins": 4,
+      "gp": 4,
+      "last_pf": 24,
+      "last_pa": 6
+    },
+    "DAL": {
+      "pf_sum": 73,
+      "pa_sum": 122,
+      "wins": 1,
+      "gp": 4,
+      "last_pf": 6,
+      "last_pa": 24
+    },
+    "HOU": {
+      "pf_sum": 63,
+      "pa_sum": 106,
+      "wins": 1,
+      "gp": 4,
+      "last_pf": 17,
+      "last_pa": 24
+    },
+    "ORL": {
+      "pf_sum": 79,
+      "pa_sum": 72,
+      "wins": 2,
+      "gp": 4,
+      "last_pf": 17,
+      "last_pa": 20
+    },
+    "CLB": {
+      "pf_sum": 88,
+      "pa_sum": 76,
+      "wins": 2,
+      "gp": 4,
+      "last_pf": 24,
+      "last_pa": 17
+    }
+  }
+}
