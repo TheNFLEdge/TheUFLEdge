@@ -39,7 +39,7 @@ jobs:
         run: node ufl-espnDataGen.js
 
       - name: Archive Current Week
-        run: node ufl-archiver.js
+        run: python ufl-archiver.py
 
       - name: Generate Projections
         env:
