@@ -4,6 +4,7 @@
   "description": "The new home for the UFL Edge \r The PanaGeoTech powered Pick and Projection Engine. \r Providing Score Projections and the WINNERS for the UFL (formerly USFL and XFL) \r Copyright (c) 2026",
   "main": "ufl-espnDataGen.js",
   "scripts": {
+    "update:final": "node ./UFL_updater.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
