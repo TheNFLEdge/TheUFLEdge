@@ -1,55 +1,73 @@
-name: Weekly UFL Data Sync
+name: UFL Weekly Update
 
 on:
   schedule:
-    # Runs at 10:00 AM UTC (6 AM ET) every Tuesday
-    - cron: '0 10 * * 2'
-  workflow_dispatch: # Allows you to run it manually to test it right now
+    - cron: '0 3 * * 2' # Tuesday at 3 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  sync_file:
+  weekly-update:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout your repository
+    - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Fetch file from source repository
-      run: |
-        curl -L -H "Accept: application/vnd.github.v3.raw" \
-        -o UFL/UFLWTmp.htm \
-        https://githubusercontent.com
-
-    # --- NODE.JS ENVIRONMENT SETUP ---
-    - name: Setup Node.js Environment
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version: '18'
 
-    - name: Install Node.js Dependencies
+    - name: Install dependencies
       run: npm install
 
-    # --- RUN THE UPDATER SCRIPT ---
-    - name: Run UFL Scores and Projections Updater
+    # --- Step 1: Run Score Injection First ---
+    # Finalizes current week scores and applies incremental win styling markers
+    - name: Run Live Odds API Scores Injection
       env:
-        # Securely maps your GitHub Secret to your script's process.env
         ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
       run: node UFL_updater.js
 
-    # --- COMMIT AND PUSH ALL CHANGES ---
-    - name: Commit and push if changed
-      run: |
-        git config --global user.name "GitHub Action"
-        git config --global user.email "action@github.com"
-        
-        # Track the template and the files generated in your pages subfolder
-        git add UFL/UFLWTmp.htm
-        git add pages/*.htm
-        
-        if git diff --staged --quiet; then
-          echo "No changes detected."
-        else
-          git commit -m "Automated Tuesday sync, score injection, and week finalization"
-          git push
-        fi
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
+    # --- Step 2: Generate ESPN Data ---
+    - name: Generate ESPN Data
+      env:
+        PG_PI_X: ${{ secrets.PG_PI_X }}
+        PG_PI7: ${{ secrets.PG_PI7 }}
+        PG_PPI5: ${{ secrets.PG_PPI5 }}
+        PG_PI2: ${{ secrets.PG_PI2 }}
+        PG_PI0: ${{ secrets.PG_PI0 }}
+        PG_MD: ${{ secrets.PG_MD }}
+      run: node ufl-espnDataGen.js
+
+    # --- Step 3: Archive Current Week ---
+    - name: Archive Current Week
+      run: python ufl-archiver.py
+
+    # --- Step 4: Generate Projections ---
+    - name: Generate Projections
+      env:
+        PG_PI_X: ${{ secrets.PG_PI_X }}
+        PG_PI7: ${{ secrets.PG_PI7 }}
+        PG_PPI5: ${{ secrets.PG_PPI5 }}
+        PG_PI2: ${{ secrets.PG_PI2 }}
+        PG_PI0: ${{ secrets.PG_PI0 }}
+        PG_MD: ${{ secrets.PG_MD }}
+      run: python ufl-panageo-projeng.py
+
+    # --- Step 5: Commit and Push Updates ---
+    - name: Commit and Push Updates
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: 'Weekly UFL Update: Scores injected, ESPN data, archive, and projections'
+        commit_options: '--no-verify'
+        # Expanded pattern to cleanly track new files generated in your pages/ subfolder
+        file_pattern: '*.json *.htm *.html pages/*.htm'
+        branch: main
