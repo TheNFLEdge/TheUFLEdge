@@ -1,13 +1,19 @@
-// 1. MUST BE AT THE VERY TOP: Force-loads the .env file from the execution root
 const path = require('path');
-require('dotenv').config({ path: path.join(process.cwd(), '.env') });
-
-const axios = require('axios');
 const fs = require('fs');
+const axios = require('axios');
+
+if (fs.existsSync(path.join(process.cwd(), '.env'))) {
+  try {
+    require('dotenv').config({ path: path.join(process.cwd(), '.env') });
+  } catch (e) {
+    // Soft landing: ignores dotenv if not installed on the GitHub server
+  }
+}
 
 // 2. Strict directory routing: Read templates from root, write finals to pages/
 const PAGES_DIR = process.cwd();
 const OUTPUT_DIR = path.join(process.cwd(), 'pages');
+
 
 const INPUT_FILE_REGEX = /^UFLWk(\d+)\.htm$/i;
 const FINAL_SUFFIX = 'F';
