@@ -16,10 +16,15 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Install Project Dependencies
-      run: npm install
+    # --- HARDENED INDEPENDENT DEPENDENCY INSTALLATION ENGINE ---
+    - name: Install All Project Dependencies
+      run: npm ci
 
-    - name: Execute UFL Updater Script
+    - name: Install Playwright System Dependencies
+      run: npx playwright install-deps
+    # ------------------------------------------------------------
+
+     Sith: Execute UFL Updater Script
       env:
         ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
       run: node UFL_updater.js
