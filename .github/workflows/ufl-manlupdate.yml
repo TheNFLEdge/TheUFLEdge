@@ -24,7 +24,7 @@ jobs:
       run: npx playwright install-deps
     # ------------------------------------------------------------
 
-     Sith: Execute UFL Updater Script
+    - name: Execute UFL Updater Script
       env:
         ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
       run: node UFL_updater.js
