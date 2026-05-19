@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>The UFL Edge - 2026 Performance Archives</title>
+
+    <style>
+        :root {
+            --dark-blue: #001A33;
+            --border-blue: #004080;
+            --accent-blue: #4d94ff;
+            --text-silver: #D3D3D3;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background-color: var(--dark-blue);
+            color: var(--text-silver);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .site-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .top-frame {
+            background-color: var(--dark-blue);
+            border-bottom: 2px solid var(--border-blue);
+        }
+
+        .banner-container {
+            padding: 10px 0;
+        }
+
+        .main-banner {
+            max-width: 800px;
+            border: 1px solid var(--border-blue);
+        }
+
+        .nav-bar {
+            background: #000b1a;
+            padding: 8px;
+            text-align: center;
+            border-top: 1px solid var(--border-blue);
+        }
+
+        .nav-bar a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            margin: 0 15px;
+            letter-spacing: 1px;
+        }
+
+        .nav-bar a:hover { color: white; }
+
+        .main-frame {
+            flex-grow: 1;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+        }
+
+        iframe {
+            width: 100%;
+            max-width: 1000px;
+            border-left: 2px solid var(--border-blue);
+            border-right: 2px solid var(--border-blue);
+            background: #000;
+        }
+
+        .bottom-frame {
+            background: #000;
+            border-top: 2px solid var(--border-blue);
+            padding: 15px 10px;
+            text-align: center;
+            font-size: 0.75em;
+            color: #888;
+        }
+
+        .highlight { color: var(--accent-blue); font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+<div class="site-wrapper">
+
+    <header class="top-frame">
+        <div class="banner-container">
+            <img src="images/EdgeBan26.jpg" class="main-banner" alt="The UFL Edge Banner">
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <a href="index.html">Current Issue</a>
+        <a href="pages/26_UFLArch.htm">Performance Archives</a>
+        <a href="mailto:admin@thenfledge.com">Contact / Support</a>
+    </nav>
+
+    <main class="main-frame">
+        <iframe src="pages/26_UFLArch.htm" frameborder="0"></iframe>
+    </main>
+
+    <footer class="bottom-frame">
+        The new home for <span class="highlight">The UFL Edge</span>.  
+        Powered by <span class="highlight">PanaGeoTech</span> Analytics.<br>
+        Providing Score Projections and the <span class="highlight">WINNERS</span> for the UFL.<br>
+        © 2026 PanaGeoTech
+    </footer>
+
+</div>
+
+</body>
+</html>
