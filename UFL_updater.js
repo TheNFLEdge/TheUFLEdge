@@ -2,223 +2,142 @@ const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
 
-if (fs.existsSync(path.join(process.cwd(), '.env'))) {
-  try {
-    require('dotenv').config({ path: path.join(process.cwd(), '.env') });
-  } catch (e) {
-    // Soft landing: ignores dotenv if not installed on the GitHub server
-  }
-}
-
-// 2. Strict directory routing: Read templates from root, write finals to pages/
 const PAGES_DIR = process.cwd();
 const OUTPUT_DIR = path.join(process.cwd(), 'pages');
-
 
 const INPUT_FILE_REGEX = /^UFLWk(\d+)\.htm$/i;
 const FINAL_SUFFIX = 'F';
 
-const TEAM_ABBR_MAP = {
-  'BIRMINGHAM STALLIONS': 'BHAM',
-  'MICHIGAN PANTHERS': 'MICH',
-  'MEMPHIS SHOWBOATS': 'MEM',
-  'HOUSTON ROUGHNECKS': 'HOU',
-  'HOUSTON GAMBLERS': 'HOU',
-  'ARLINGTON RENEGADES': 'DAL',
-  'DALLAS RENEGADES': 'DAL',
-  'DC DEFENDERS': 'DC',
-  'D.C. DEFENDERS': 'DC',
-  'SAN ANTONIO BRAHMAS': 'SA',
-  'ST. LOUIS BATTLEHAWKS': 'STL',
-  'ST LOUIS BATTLEHAWKS': 'STL',
-  'LOUISVILLE KINGS': 'LOU',
-  'COLUMBUS AVIATORS': 'CLB',
-  'ORLANDO STORM': 'ORL'
-};
+// ESPN UFL Scoreboard Endpoint
+const ESPN_URL = "https://site.api.espn.com/apis/site/v2/sports/football/ufl/scoreboard?dates=2026&seasontype=2";
 
 async function main() {
-  console.log('🔄 Loading live score streams from The Odds API...');
-  const scoresFeed = await fetchOddsApiScores();
+    console.log("📡 Fetching UFL scores from ESPN…");
 
-  // HARDENING 1: Process does not exit with code 1 if the API is blank (e.g. past 3-day limit)
-  if (!scoresFeed || !scoresFeed.length) {
-    console.warn('⚠️ No tracking elements returned from API (likely past 3-day window limit). Proceeding without fresh feed data.');
-  }
-
-  // Scan the root directory for active unfinalized templates (e.g., UFLWk8.htm)
-  const pageFiles = fs.readdirSync(PAGES_DIR)
-    .filter(file => INPUT_FILE_REGEX.test(file) && !file.match(/F\.htm$/i));
-
-  if (!pageFiles.length) {
-    console.error(`📁 No UFLWk#.htm template files found in root directory: ${PAGES_DIR}`);
-    process.exit(1);
-  }
-
-  // Map API elements if present, fallback to empty mapping matrix if missing
-  const masterResultsMap = scoresFeed ? buildMasterAbbreviationResults(scoresFeed) : {};
-
-  for (const fileName of pageFiles) {
-    await processPageFile(fileName, masterResultsMap);
-  }
-}
-
-async function fetchOddsApiScores() {
-  const oddsKey = process.env.ODDS_API_KEY;
-  if (!oddsKey) {
-    console.error('❌ Missing ODDS_API_KEY inside your local .env configuration file.');
-    return null;
-  }
-
-            // FIXED ENDPOINT: Uses the official sports scores payload key for UFL football
-  const targetUrl = `https://api.the-odds-api.com/v4/sports/americanfootball_ufl/scores/?apiKey=${oddsKey}&daysFrom=3`;
-
-
-  try {
-    console.log('📡 Requesting verified live data stream from endpoint...');
-    const response = await axios.get(targetUrl);
-    return Array.isArray(response.data) ? response.data : (response.data.data || []);
-  } catch (error) {
-    console.warn('⚠️ API connection handshake failed:', error.message);
-    return null;
-  }
-}
-
-function buildMasterAbbreviationResults(scoresFeed) {
-  const map = {};
-
-  scoresFeed.forEach(game => {
-    const rawAwayName = String(game.away_team).toUpperCase();
-    const rawHomeName = String(game.home_team).toUpperCase();
-
-    const awayAbbr = TEAM_ABBR_MAP[rawAwayName] || TEAM_ABBR_MAP[rawAwayName.replace(/[\.]/g, '')] || rawAwayName.split(' ').pop();
-    const homeAbbr = TEAM_ABBR_MAP[rawHomeName] || TEAM_ABBR_MAP[rawHomeName.replace(/[\.]/g, '')] || rawHomeName.split(' ').pop();
-
-    const isCompleted = game.completed || false;
-    const isLive = !isCompleted && Array.isArray(game.scores) && game.scores.length > 0;
-    
-    let homeScore = 0;
-    let awayScore = 0;
-
-    if ((isCompleted || isLive) && Array.isArray(game.scores)) {
-      const hScoreObj = game.scores.find(s => String(s.name).toUpperCase() === rawHomeName);
-      const aScoreObj = game.scores.find(s => String(s.name).toUpperCase() === rawAwayName);
-      homeScore = hScoreObj ? Number(hScoreObj.score) : 0;
-      awayScore = aScoreObj ? Number(aScoreObj.score) : 0;
+    const resultsMap = await fetchESPNResults();
+    if (!resultsMap) {
+        console.error("❌ No results map generated. Aborting.");
+        return;
     }
 
-    let actualWinner = 'push';
-    if (isCompleted) {
-      if (homeScore > awayScore) actualWinner = homeAbbr;
-      else if (awayScore > homeScore) actualWinner = awayAbbr;
+    console.log("📘 Score map keys:", Object.keys(resultsMap));
+
+    const pageFiles = fs.readdirSync(PAGES_DIR)
+        .filter(file => INPUT_FILE_REGEX.test(file) && !file.match(/F\.htm$/i));
+
+    if (!pageFiles.length) {
+        console.error("❌ No UFLWk#.htm template files found.");
+        return;
     }
 
-    let scoreString = 'TBD';
-    if (isCompleted) {
-      scoreString = `${awayAbbr} ${awayScore} - ${homeAbbr} ${homeScore}`;
-    } else if (isLive) {
-      scoreString = `${awayAbbr} ${awayScore} - ${homeAbbr} ${homeScore} (LIVE)`;
+    for (const fileName of pageFiles) {
+        await processPageFile(fileName, resultsMap);
     }
-    
-    const key = `${awayAbbr}_${homeAbbr}`;
-    const reverseKey = `${homeAbbr}_${awayAbbr}`;
-
-    map[key] = {
-      scoreString,
-      isCompleted,
-      isLive,
-      actualWinner,
-      awayAbbr,
-      homeAbbr
-    };
-    map[reverseKey] = { ...map[key] };
-  });
-
-  return map;
 }
 
-async function processPageFile(fileName, masterResultsMap) {
-  const sourcePath = path.join(PAGES_DIR, fileName);
-  
-  const ext = path.extname(fileName);
-  const base = path.basename(fileName, ext);
-  const targetPath = path.join(OUTPUT_DIR, `${base}${FINAL_SUFFIX}${ext}`);
+async function fetchESPNResults() {
+    try {
+        const { data } = await axios.get(ESPN_URL);
 
-  // HARDENING 2: If an early iteration output file already exists in the /pages/ directory, 
-  // read that instead of resetting to raw template file state.
-  let content;
-  if (fs.existsSync(targetPath)) {
-    console.log(`♻️ Found existing target file. Running in incremental update mode: pages/${base}${FINAL_SUFFIX}${ext}`);
-    content = fs.readFileSync(targetPath, 'utf8');
-  } else {
-    console.log(`🔍 Scanning raw root template content: ${fileName}`);
-    content = fs.readFileSync(sourcePath, 'utf8');
-  }
+        const map = {};
 
-  if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-  }
+        data.events.forEach(event => {
+            const comp = event.competitions[0];
+            const home = comp.competitors.find(c => c.homeAway === "home");
+            const away = comp.competitors.find(c => c.homeAway === "away");
 
-  const updatedContent = injectScoresAndDecorations(content, masterResultsMap);
+            const homeAbbr = home.team.abbreviation.toUpperCase();
+            const awayAbbr = away.team.abbreviation.toUpperCase();
 
-  fs.writeFileSync(targetPath, updatedContent, 'utf8');
-  console.log(`✅ Final edition written to: pages/${base}${FINAL_SUFFIX}${ext}`);
+            const completed = event.status.type.completed === true;
+
+            let scoreString = "TBD";
+
+            if (completed) {
+                const hScore = Number(home.score);
+                const aScore = Number(away.score);
+                scoreString = `${awayAbbr} ${aScore} - ${homeAbbr} ${hScore}`;
+            }
+
+            const key = `${awayAbbr}_${homeAbbr}`;
+            const reverseKey = `${homeAbbr}_${awayAbbr}`;
+
+            map[key] = { scoreString, completed, awayAbbr, homeAbbr };
+            map[reverseKey] = { scoreString, completed, awayAbbr, homeAbbr };
+        });
+
+        return map;
+
+    } catch (err) {
+        console.error("❌ ESPN fetch failed:", err.message);
+        return null;
+    }
 }
 
-function injectScoresAndDecorations(html, resultsMap) {
-  let content = html;
+async function processPageFile(fileName, resultsMap) {
+    const sourcePath = path.join(PAGES_DIR, fileName);
 
-  // 1. Process inline text tag replacements [FINAL_SCORE_MICH_BHAM] if they are currently TBD
-  content = content.replace(/\[FINAL_SCORE_([A-Z]+)_([A-Z]+)\]/g, (match, away, home) => {
-    const freshData = resultsMap[`${away}_${home}`];
-    return freshData?.scoreString || match; 
-  });
+    const ext = path.extname(fileName);
+    const base = path.basename(fileName, ext);
+    const targetPath = path.join(OUTPUT_DIR, `${base}${FINAL_SUFFIX}${ext}`);
 
-  // 2. Process Game Cards with incremental state isolation guards
-  content = content.replace(/<div[^>]*class=["']game-card["'][^>]*>[\s\S]*?<\/div>/gi, (block) => {
-    // HARDENING check: If the final score block is already decorated or filled with numbers, skip updates entirely
-    if (block.includes('class="status-win"') || /<td><b>Final Score:<\/b><\/td><td[^>]*>\s*[A-Z]{2,4}\s+\d+/i.test(block)) {
-      return block; // Returns block completely untouched preserving early execution results
+    console.log(`📝 Updating: ${fileName}`);
+
+    const content = fs.readFileSync(sourcePath, "utf8");
+
+    if (!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdirSync(OUTPUT_DIR, { recursive: true });
     }
 
-    const projectedMatch = /<td><b>Projected Score:<\/b><\/td><td>\s*([A-Z]{2,4})\s+(\d+)\s*[–-]\s*([A-Z]{2,4})\s+(\d+)\s*<\/td>/i.exec(block);
-    if (!projectedMatch) return block;
+    const updated = injectScores(content, resultsMap);
 
-    const projTeamA = projectedMatch[1].toUpperCase();
-    const projScoreA = Number(projectedMatch[2]);
-    const projTeamB = projectedMatch[3].toUpperCase();
-    const projScoreB = Number(projectedMatch[4]);
+    fs.writeFileSync(targetPath, updated, "utf8");
 
-    const gameData = resultsMap[`${projTeamA}_${projTeamB}`] || resultsMap[`${projTeamB}_${projTeamA}`];
-    
-    // If the game data is completely missing or still unplayed (TBD), keep current block state
-    if (!gameData || (!gameData.isCompleted && !gameData.isLive)) return block;
-
-    let projectedWinner = 'push';
-    if (projScoreA > projScoreB) projectedWinner = projTeamA;
-    else if (projScoreB > projScoreA) projectedWinner = projTeamB;
-
-    const isPredictionCorrect = gameData.isCompleted && (projectedWinner === gameData.actualWinner) && (gameData.actualWinner !== 'push');
-    let updatedBlock = block;
-
-    if (isPredictionCorrect) {
-      updatedBlock = updatedBlock.replace(
-        /(<tr>\s*<td><b>Final Score:<\/b><\/td>)(<td[^>]*>)([\s\S]*?)(<\/td>\s*<\/tr>)/i,
-        (_, trOpen, oldTdOpen, existingValue, tdClose) => `${trOpen}<td class="status-win">${gameData.scoreString}${tdClose}`
-      );
-    } else {
-      updatedBlock = updatedBlock.replace(
-        /(<tr>\s*<td><b>Final Score:<\/b><\/td>)(<td[^>]*>)([\s\S]*?)(<\/td>\s*<\/tr>)/i,
-        (_, trOpen, oldTdOpen, existingValue, tdClose) => `${trOpen}${oldTdOpen}${gameData.scoreString}${tdClose}`
-      );
-    }
-
-    return updatedBlock;
-  });
-
-  return content;
+    console.log(`✅ Wrote: pages/${base}${FINAL_SUFFIX}${ext}`);
 }
 
-main().catch(error => {
-  console.error('❌ Script execution failed:', error);
-  process.exit(1);
-});
+function injectScores(html, resultsMap) {
+    let content = html;
+
+    // Replace HTML comment markers like <!--FINAL-SCORE-ORL-DAL-->
+    content = content.replace(/<!--FINAL-SCORE-([A-Z]+)-([A-Z]+)-->/g,
+        (match, away, home) => {
+            const key = `${away}_${home}`;
+            return resultsMap[key]?.scoreString || match;
+        }
+    );
+
+    // Update game-card blocks
+    content = content.replace(
+        /<div[^>]*class=["']game-card["'][^>]*>[\s\S]*?<\/div>/gi,
+        block => updateGameCard(block, resultsMap)
+    );
+
+    return content;
+}
+
+function updateGameCard(block, resultsMap) {
+    // Extract comment marker teams
+    const commentMatch = /<!--FINAL-SCORE-([A-Z]+)-([A-Z]+)-->/i.exec(block);
+    if (!commentMatch) return block;
+
+    const away = commentMatch[1];
+    const home = commentMatch[2];
+
+    const gameData =
+        resultsMap[`${away}_${home}`] ||
+        resultsMap[`${home}_${away}`];
+
+    if (!gameData || !gameData.completed) return block;
+
+    const scoreString = gameData.scoreString;
+
+    // Replace Final Score row
+    return block.replace(
+        /(<tr>\s*<td><b>Final Score:<\/b><\/td>)(<td[^>]*>)(?:<!--.*?-->)?([\s\S]*?)(<\/td>\s*<\/tr>)/i,
+        (_, trOpen, tdOpen, oldValue, tdClose) =>
+            `${trOpen}${tdOpen}${scoreString}${tdClose}`
+    );
+}
+
+main();
