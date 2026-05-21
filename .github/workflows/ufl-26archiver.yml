@@ -1,0 +1,43 @@
+name: Tabulate UFL Archive Weeks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 2'
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install beautifulsoup4
+
+    - name: Run Archive Sync Script
+      run: python ufl-archiver.py
+
+    - name: Commit and Push Updated Archive
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@github.com"
+        
+        git add pages/26_UFLArch.htm
+        
+        if ! git diff --cached --quiet; then
+          git commit -m "chore: auto-tabulate unparsed weeks in archive [skip ci]"
+          git push origin main
+        else
+          echo "No new weeks discovered. Table is fully up to date."
+        fi
