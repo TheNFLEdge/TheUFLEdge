@@ -2,7 +2,7 @@ name: UFL Weekly Update
 
 on:
   schedule:
-    - cron: '0 3 * * 2' # Tuesday at 3 AM UTC
+    - cron: '30 3 * * 2' # Tuesday at 3:30 AM UTC
   workflow_dispatch:
 
 permissions:
@@ -16,58 +16,52 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    # ============================================
+    # PHASE 1: FINALIZE CURRENT WEEK SCORES
+    # ============================================
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
-    # --- Step 1: Run Score Injection First ---
-    # Finalizes current week scores and applies incremental win styling markers
-    - name: Run Live Odds API Scores Injection
-      env:
-        ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
-      run: node UFL_updater.js
+    - name: Run Final Score Injection
+      run: npm run update:final
 
+    # ============================================
+    # PHASE 2: ARCHIVE COMPLETED WEEK
+    # ============================================
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
-    # --- Step 2: Generate ESPN Data ---
-    - name: Generate ESPN Data
-      env:
-        PG_PI_X: ${{ secrets.PG_PI_X }}
-        PG_PI7: ${{ secrets.PG_PI7 }}
-        PG_PPI5: ${{ secrets.PG_PPI5 }}
-        PG_PI2: ${{ secrets.PG_PI2 }}
-        PG_PI0: ${{ secrets.PG_PI0 }}
-        PG_MD: ${{ secrets.PG_MD }}
-      run: node ufl-espnDataGen.js
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install beautifulsoup4
 
-    # --- Step 3: Archive Current Week ---
-    - name: Archive Current Week
-      run: python ufl-archiver.py
+    - name: Tabulate and Archive Completed Week
+      run: npm run archive
 
-    # --- Step 4: Generate Projections ---
-    - name: Generate Projections
-      env:
-        PG_PI_X: ${{ secrets.PG_PI_X }}
-        PG_PI7: ${{ secrets.PG_PI7 }}
-        PG_PPI5: ${{ secrets.PG_PPI5 }}
-        PG_PI2: ${{ secrets.PG_PI2 }}
-        PG_PI0: ${{ secrets.PG_PI0 }}
-        PG_MD: ${{ secrets.PG_MD }}
-      run: python ufl-panageo-projeng.py
+    # ============================================
+    # PHASE 3: GENERATE NEXT WEEK'S PROJECTIONS
+    # ============================================
+    - name: Generate ESPN Data for Next Week
+      run: npm run generate:espn
 
-    # --- Step 5: Commit and Push Updates ---
+    - name: Generate Score Projections for Next Week
+      run: npm run generate:projections
+
+    # ============================================
+    # PHASE 4: COMMIT & PUSH ALL UPDATES
+    # ============================================
     - name: Commit and Push Updates
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
-        commit_message: 'Weekly UFL Update: Scores injected, ESPN data, archive, and projections'
+        commit_message: 'Weekly UFL Turnover: finalized scores, archived week, generated projections'
         commit_options: '--no-verify'
-        # Expanded pattern to cleanly track new files generated in your pages/ subfolder
-        file_pattern: '*.json *.htm *.html pages/*.htm'
+        file_pattern: 'pages/*.htm ufl_data_handoff.json *.json'
         branch: main

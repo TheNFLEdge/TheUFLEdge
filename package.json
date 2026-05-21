@@ -5,6 +5,10 @@
   "main": "ufl-espnDataGen.js",
   "scripts": {
     "update:final": "node ./UFL_updater.js",
+    "generate:espn": "node ./ufl-espnDataGen.js",
+    "archive": "python ./ufl-archiver.py",
+    "generate:projections": "python ./ufl-panageo-projeng.py",
+    "ci:full": "npm run update:final && npm run generate:espn && npm run archive && npm run generate:projections",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

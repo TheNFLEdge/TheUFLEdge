@@ -13,40 +13,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Check out your repository files
     - name: Checkout Repository
       uses: actions/checkout@v4
       with:
-        # Fetches all history so git can commit changes back cleanly
-        fetch-depth: 0 
+        fetch-depth: 0
 
-    # Step 2: Set up Python environment
     - name: Set up Python
-      uses: actions/checkout@v4
       uses: actions/setup-python@v5
       with:
-        python-key: '3.11'
+        python-version: '3.11'
 
-    # Step 3: Install BeautifulSoup4 dependency safely
-    - name: Install Dependencies
+    - name: Install Python Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install beautifulsoup4
 
-    # Step 4: Execute your compilation script
     - name: Run Archive Sync Script
-      run: python update_archive.py  # <-- Make sure this matches your script file name!
+      run: python ufl-archiver.py
 
-    # Step 5: Check for modifications and automatically push them to your main branch
     - name: Commit and Push Updated Archive
       run: |
         git config --global user.name "github-actions[bot]"
-        git config --global user.email "41898282+github-actions[bot]@://github.com"
+        git config --global user.email "41898282+github-actions[bot]@github.com"
         
-        # Check if the 26_UFLArch.htm file was modified by the script
         git add pages/26_UFLArch.htm
         
-        # Commit and push only if there are actually changes to write
         if ! git diff --cached --quiet; then
           git commit -m "chore: auto-tabulate unparsed weeks in archive [skip ci]"
           git push origin main
