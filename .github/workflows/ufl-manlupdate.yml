@@ -23,7 +23,7 @@ jobs:
 
       # FIXED: Points to the accurate filename UFL_update.js
       - name: Execute UFL Updater Script
-        run: node UFL_update.js
+        run: node UFL_updater.js
 
       # FIXED: Added UFLWTmp to the git tracking stage to catch the active root file
       - name: Commit and Push Updated HTML
