@@ -1,7 +1,10 @@
 name: Tabulate UFL Archive Weeks
 
 on:
+  # 1. Allows you to trigger this workflow manually on-demand from the UI
   workflow_dispatch:
+
+  # 2. Runs on a schedule every Tuesday at 9:00 AM UTC (5:00 AM EST)
   schedule:
     - cron: '0 9 * * 2'
 
