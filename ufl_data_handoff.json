@@ -2,12 +2,6 @@
   "target_week": 9,
   "matchups": [
     {
-      "away": "DC",
-      "home": "ORL",
-      "line": "-2.5",
-      "ou": "(45.5)"
-    },
-    {
       "away": "BHAM",
       "home": "CLB",
       "line": "+1.5",
