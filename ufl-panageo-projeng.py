@@ -65,7 +65,7 @@ if __name__ == "__main__":
         <div class="game-card">
             <h4>{a} @ {h} {m['line']} {m['ou']}</h4>
             <table>
-                <tr><td><b>Projected Score:</b></td><td>{a_score} – {h_score}</td></tr>
+                <tr><td><b>Projected Score:</b></td><td>{a} {a_score} – {h} {h_score}</td></tr>
                 <tr><td><b>Final Score:</b></td><td><!--FINAL-SCORE-{a}-{h}--></td></tr>
             </table>
         </div>"""
