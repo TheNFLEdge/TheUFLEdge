@@ -1,89 +1,70 @@
 {
-  "target_week": 9,
-  "matchups": [
-    {
-      "away": "BHAM",
-      "home": "CLB",
-      "line": "+1.5",
-      "ou": "(43.5)"
-    },
-    {
-      "away": "DAL",
-      "home": "LOU",
-      "line": "-1.5",
-      "ou": "(46.5)"
-    },
-    {
-      "away": "STL",
-      "home": "HOU",
-      "line": "+3",
-      "ou": "(42.5)"
-    }
-  ],
+  "target_week": 11,
+  "matchups": [],
   "team_stats": {
     "LOU": {
-      "pf_sum": 113,
-      "pa_sum": 84,
-      "wins": 3,
+      "pf_sum": 142,
+      "pa_sum": 93,
+      "wins": 4,
       "gp": 4,
-      "last_pf": 33,
-      "last_pa": 30
+      "last_pf": 42,
+      "last_pa": 27
     },
     "BHAM": {
-      "pf_sum": 83,
+      "pf_sum": 77,
       "pa_sum": 82,
-      "wins": 3,
+      "wins": 2,
       "gp": 4,
-      "last_pf": 14,
-      "last_pa": 3
+      "last_pf": 13,
+      "last_pa": 26
     },
     "STL": {
-      "pf_sum": 88,
-      "pa_sum": 63,
-      "wins": 3,
+      "pf_sum": 84,
+      "pa_sum": 78,
+      "wins": 2,
       "gp": 4,
       "last_pf": 16,
-      "last_pa": 23
+      "last_pa": 20
     },
     "DC": {
-      "pf_sum": 112,
-      "pa_sum": 97,
-      "wins": 2,
-      "gp": 4,
-      "last_pf": 30,
-      "last_pa": 33
-    },
-    "DAL": {
-      "pf_sum": 72,
-      "pa_sum": 123,
+      "pf_sum": 85,
+      "pa_sum": 119,
       "wins": 0,
       "gp": 4,
-      "last_pf": 24,
-      "last_pa": 31
-    },
-    "HOU": {
-      "pf_sum": 80,
-      "pa_sum": 77,
-      "wins": 2,
-      "gp": 4,
       "last_pf": 23,
-      "last_pa": 16
+      "last_pa": 29
     },
-    "ORL": {
-      "pf_sum": 89,
-      "pa_sum": 92,
-      "wins": 2,
-      "gp": 4,
-      "last_pf": 31,
-      "last_pa": 24
-    },
-    "CLB": {
-      "pf_sum": 60,
-      "pa_sum": 79,
+    "DAL": {
+      "pf_sum": 84,
+      "pa_sum": 105,
       "wins": 1,
       "gp": 4,
-      "last_pf": 3,
-      "last_pa": 14
+      "last_pf": 20,
+      "last_pa": 16
+    },
+    "HOU": {
+      "pf_sum": 87,
+      "pa_sum": 74,
+      "wins": 2,
+      "gp": 4,
+      "last_pf": 26,
+      "last_pa": 13
+    },
+    "ORL": {
+      "pf_sum": 111,
+      "pa_sum": 89,
+      "wins": 4,
+      "gp": 4,
+      "last_pf": 29,
+      "last_pa": 23
+    },
+    "CLB": {
+      "pf_sum": 86,
+      "pa_sum": 116,
+      "wins": 1,
+      "gp": 4,
+      "last_pf": 27,
+      "last_pa": 42
     }
   }
 }
